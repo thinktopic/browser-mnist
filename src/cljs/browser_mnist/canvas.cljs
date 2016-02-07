@@ -57,11 +57,7 @@
       {:component-did-mount
        (fn [this]
          (reset! canvas* (.getElementById js/document "canvas"))
-         (reset! context* (.getContext @canvas* "2d"))
-;         (.addEventListener js/document "touchstart" (fn [e]
-;                                                       (if (= (.-target e) @canvas*)
-;                                                         ())))
-         )
+         (reset! context* (.getContext @canvas* "2d")))
        :reagent-render
        (fn []
          [:canvas {:id "canvas"
