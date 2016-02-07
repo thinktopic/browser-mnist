@@ -132,6 +132,7 @@
 (defn home-page []
   [:div [:h2 "Welcome to browser-mnist"]
    [:div
+    [:span "Draw a digit in the box below and hit \"Recognize\" to use a trained neural net to determine which digit it is (0-9). You may hit \"Clear\" to clear your current drawing. It is also possible to use a much more advanced (and consequently slower) convolutional neural net by choosing the \"Use Convolutional\" option. "]
     [canvas/canvas]
     [:canvas {:id "small-canvas"
               :style {:display "none"
