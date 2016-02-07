@@ -66,23 +66,45 @@
                    :height "336"
                    :on-touch-start (fn [e]
                                      (let [touch (aget (.-touches e) 0)
-                                           event-params (clj->js {:clientX (.-clientX touch)
-                                                                  :clientY (.-clientY touch)})
-                                           event (js/MouseEvent. "mousedown" event-params)]
-                                       (.dispatchEvent @canvas* event))
-                                     (.-preventDefault e))
+                                           ; not sure why forwarding the event doesn't work, copy code here
+                                           ;event-params (clj->js {:clientX (.-clientX touch)
+                                           ;                       :clientY (.-clientY touch)})
+                                           ;event (js/MouseEvent. "mousedown" event-params)
+                                           pt [(- (.-clientX touch) (.-offsetLeft @canvas*))
+                                               (- (.-clientY touch) (.-offsetTop @canvas*))]
+                                           ]
+
+                                       (swap! clicks* conj (conj pt false))
+                                       (reset! dragging* true)
+                                       (redraw! @canvas* @context* @clicks*)
+                                       ;(.dispatchEvent @canvas* event)
+                                     (.-preventDefault e)
+                                     (.-stopPropagation e)
+                                     ))
                    :on-touch-move (fn [e]
                                      (let [touch (aget (.-touches e) 0)
-                                           event-params (clj->js {:clientX (.-clientX touch)
-                                                                  :clientY (.-clientY touch)})
-                                           event (js/MouseEvent. "mousemove" event-params)]
-                                       (.dispatchEvent @canvas* event))
-                                     (.-preventDefault e))
+                                           ;event-params (clj->js {:clientX (.-clientX touch)
+                                           ;                       :clientY (.-clientY touch)})
+                                           ;event (js/MouseEvent. "mousemove" event-params)
+                                           pt [(- (.-clientX touch) (.-offsetLeft @canvas*))
+                                               (- (.-clientY touch) (.-offsetTop @canvas*))]
+                                           ]
+                                       (swap! clicks* conj (conj pt false))
+                                       ;(.dispatchEvent @canvas* event))
+                                       (redraw! @canvas* @context* @clicks*)
+                                     (.-preventDefault e)
+                                     (.-stopPropagation e)
+                                     ))
                    :on-touch-end (fn [e]
-                                     (let [event (js/MouseEvent. "mouseup" (clj->js {}))]
-                                       (.dispatchEvent @canvas* event))
-                                     (.-preventDefault e))
+                                     (let [;event (js/MouseEvent. "mouseup" (clj->js {}))
+                                           ]
+                                       ;(.dispatchEvent @canvas* event))
+                                     (reset! dragging* false)
+                                     (.-preventDefault e)
+                                     (.-stopPropagation e)
+                                     ))
                    :on-mouse-down (fn [e]
+                                    (println "mouse down")
                                     (let [pt [(- (.-pageX e) (.-offsetLeft @canvas*))
                                             (- (.-pageY e) (.-offsetTop @canvas*))]]
                                       (swap! clicks* conj (conj pt false)))
@@ -90,6 +112,7 @@
                                     (redraw! @canvas* @context* @clicks*)
                                     (.-stopPropagation e))
                    :on-mouse-move (fn [e]
+                                    (println "mouse move")
                                     (if @dragging*
                                       (let [pt [(- (.-pageX e) (.-offsetLeft @canvas*))
                                                 (- (.-pageY e) (.-offsetTop @canvas*))]]
