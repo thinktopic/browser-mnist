@@ -89,7 +89,7 @@
                                            pt [(- (.-clientX touch) (.-offsetLeft @canvas*))
                                                (- (.-clientY touch) (.-offsetTop @canvas*))]
                                            ]
-                                       (swap! clicks* conj (conj pt false))
+                                       (swap! clicks* conj (conj pt true))
                                        ;(.dispatchEvent @canvas* event))
                                        (redraw! @canvas* @context* @clicks*)
                                      (.-preventDefault e)
