@@ -133,6 +133,8 @@
   [:div [:h2 "Welcome to browser-mnist"]
    [:div
     [:span "Draw a digit in the box below and hit \"Recognize\" to use a trained neural net to determine which digit it is (0-9). You may hit \"Clear\" to clear your current drawing. It is also possible to use a much more advanced (and consequently slower) convolutional neural net by choosing the \"Use Convolutional\" option. "]
+    [:br]
+    [:br]
     [canvas/canvas]
     [:canvas {:id "small-canvas"
               :style {:display "none"
@@ -153,19 +155,20 @@
                                               (canvas/clear!)
                                               (reset! classified* nil)
                                               (reset! using-basic* true)
-                                              )} "Use Basic"])
+                                              )} "Basic"])
         (if @using-basic*
         [:span {:style btn-style :on-click #(do
                                               (reset! loading* true)
                                               (model/get-conv-network load-network)
                                               (canvas/clear!)
                                               (reset! classified* nil)
-                                              (reset! using-basic* false))} "Use Convolutional"])
+                                              (reset! using-basic* false))} "Convolutional"])
         [:span {:style btn-style :on-click #(do (canvas/clear!) (reset! classified* nil))} "Clear"]
         [:span {:style btn-style :on-click #(do (reset! classifying* true)
                                                  (get-array))} "Recognize"]
         (when @classified*
-          [:span {:style {:display "inline-block"}} " Result: " @classified*])]))])
+          [:span {:style {:margin-left "5px"
+                          :display "inline-block"}} " Result: " @classified*])]))])
 
 ;; -------------------------
 ;; Routing
