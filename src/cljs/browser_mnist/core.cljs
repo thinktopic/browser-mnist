@@ -24,6 +24,9 @@
 ;; State
 (def network* (atom nil))
 (def classified* (atom nil))
+(def loading* (atom true))
+(def classifying* (atom false))
+(def using-basic* (atom true))
 
 ;; -------------------------
 ;; Neural Network
@@ -32,7 +35,7 @@
   (->> network
        (cs/read-network!)
        (reset! network*))
-  (println "loaded network."))
+  (reset! loading* false))
 
 (defn classify [num-array]
   (println num-array)
@@ -105,6 +108,7 @@
     (classify pixels)))
 
 (defn get-array []
+  (reset! classifying* true)
   (let [small-canvas (.getElementById js/document "small-canvas")
         small-context (.getContext small-canvas "2d")
         _ (doto small-context
@@ -120,6 +124,7 @@
                         (mapv (fn [[r g b]] (/ (+ (* 0.3 r) (* 0.59 g) (* 0.11 b)) 255.0))) ; greyscale
                         )]
     (classify pixels-ary)
+    (reset! classifying* false)
     (println "count of pixel ary: " (count pixels-ary))
     ;(doseq [r (m/to-nested-vectors pixels-ary)]
     ;  (println "[" (map #(format "% 2.2f" %) r) "]"))
@@ -139,10 +144,31 @@
                       :background-color "black"}
               :width "28"
               :height "28"}]]
-   [:span {:style btn-style :on-click #(do (canvas/clear!) (reset! classified* nil))} "Clear"]
-   [:span {:style btn-style :on-click #(get-array)} "Recognize"]
-   (when @classified*
-     [:span {:style {:display "inline-block"}} " Result: " @classified*])])
+
+   (if @loading*
+     [:div "Loading network..."]
+     (if @classifying*
+       [:div "Classifying..."]
+       [:div.actions
+        (if (not @using-basic*)
+        [:span {:style btn-style :on-click #(do
+                                              (reset! loading* true)
+                                              (model/get-basic-network load-network)
+                                              (canvas/clear!)
+                                              (reset! classified* nil)
+                                              (reset! using-basic* true)
+                                              )} "Use Basic"])
+        (if @using-basic*
+        [:span {:style btn-style :on-click #(do
+                                              (reset! loading* true)
+                                              (model/get-conv-network load-network)
+                                              (canvas/clear!)
+                                              (reset! classified* nil)
+                                              (reset! using-basic* false))} "Use Convolutional"])
+        [:span {:style btn-style :on-click #(do (canvas/clear!) (reset! classified* nil))} "Clear"]
+        [:span {:style btn-style :on-click #(get-array)} "Recognize"]
+        (when @classified*
+          [:span {:style {:display "inline-block"}} " Result: " @classified*])]))])
 
 ;; -------------------------
 ;; Routing
@@ -154,7 +180,7 @@
   (session/put! :current-page #'home-page))
 
 (defn mount-root []
-  (model/get-network load-network)
+  (model/get-basic-network load-network)
   (reagent/render [current-page] (.getElementById js/document "app")))
 
 (defn init! []

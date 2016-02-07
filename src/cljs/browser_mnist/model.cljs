@@ -14,7 +14,8 @@
 
 ;;---------------------------------------------------
 ;; Model Interface
+(defn get-conv-network [callback]
+  (GET-array-buffer "/trained-network.conv" callback))
 
-(defn get-network [callback]
-  (GET-array-buffer "/simple-trained-network" callback))
-
+(defn get-basic-network [callback]
+  (GET-array-buffer "/trained-network.basic" callback))
