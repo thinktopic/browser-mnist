@@ -12,10 +12,10 @@
 ;; Accessors
 (defn get-canvas [] @canvas*)
 (defn get-context [] @context*)
-(defn get-width [] 364)
-(defn get-height [] 364)
-(defn get-bounds [] [0 0 364 364])
-(defn get-pixels [] (.-data (.getImageData @context* 0 0 364 364)))
+(defn get-width [] 336)
+(defn get-height [] 336)
+(defn get-bounds [] [0 0 336 336])
+(defn get-pixels [] (.-data (.getImageData @context* 0 0 336 336)))
 
 ;; -------------------------
 ;; Style
@@ -23,8 +23,8 @@
                    :border-radius "3px"
                    :background-color "#000000"
                    :cursor "pointer"
-                   :width "364px"
-                   :height "364px"})
+                   :width "336px"
+                   :height "336px"})
 
 ;; -------------------------
 ;; Update Function
@@ -62,8 +62,8 @@
        (fn []
          [:canvas {:id "canvas"
                    :style canvas-style
-                   :width "364"
-                   :height "364"
+                   :width "336"
+                   :height "336"
                    :on-mouse-down (fn [e]
                                     (let [pt [(- (.-pageX e) (.-offsetLeft @canvas*))
                                             (- (.-pageY e) (.-offsetTop @canvas*))]]
