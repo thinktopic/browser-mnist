@@ -35,11 +35,11 @@
 
 (defn- redraw! [canvas context clicks]
   (.clearRect @context* 0 0 (.-width canvas) (.-height canvas))
-  (set! (.-shadowBlur context) 60)
+  (set! (.-shadowBlur context) 10)
   (set! (.-shadowColor context) "#DDDDDD")
   (set! (.-strokeStyle context) "#FFFFFF")
   (set! (.-lineJoin context) "round")
-  (set! (.-lineWidth context) 10)
+  (set! (.-lineWidth context) 4)
   (doseq [i (range (count clicks))]
     (.beginPath context)
     (if (get-in clicks [i 2])
