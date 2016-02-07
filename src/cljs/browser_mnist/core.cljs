@@ -38,7 +38,6 @@
   (reset! loading* false))
 
 (defn classify [num-array]
-  (println num-array)
   (->> (first (net/run @network* [num-array]))
        (into [])
        (map vector (range 10))
@@ -78,14 +77,12 @@
 ;; -------------------------
 ;; Actions
 
-(defn get-similar [e]
-  ;(model/get-nearest-colors @color-vec* #(reset! similar-colors* %))
-  )
-
 (defn mean [coll]
   (/ (apply + coll) (count coll)))
 
-(defn get-array-old []
+
+;; Use pure cljs to resize image (super slow in browser, don't use)
+(defn get-array-cljs []
   (let [out-width 28
         out-height 28
         rows (->> (array-seq (canvas/get-pixels) 0)
@@ -125,10 +122,8 @@
                         )]
     (classify pixels-ary)
     (reset! classifying* false)
-    (println "count of pixel ary: " (count pixels-ary))
     ;(doseq [r (m/to-nested-vectors pixels-ary)]
     ;  (println "[" (map #(format "% 2.2f" %) r) "]"))
-    ;(classify pixels)
     ))
 
 ;; -------------------------
@@ -166,7 +161,8 @@
                                               (reset! classified* nil)
                                               (reset! using-basic* false))} "Use Convolutional"])
         [:span {:style btn-style :on-click #(do (canvas/clear!) (reset! classified* nil))} "Clear"]
-        [:span {:style btn-style :on-click #(get-array)} "Recognize"]
+        [:span {:style btn-style :on-click #(do (reset! classifying* true)
+                                                 (get-array))} "Recognize"]
         (when @classified*
           [:span {:style {:display "inline-block"}} " Result: " @classified*])]))])
 
