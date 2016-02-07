@@ -12,10 +12,10 @@
 ;; Accessors
 (defn get-canvas [] @canvas*)
 (defn get-context [] @context*)
-(defn get-width [] 420)
-(defn get-height [] 420)
-(defn get-bounds [] [0 0 420 420])
-(defn get-pixels [] (.-data (.getImageData @context* 0 0 420 420)))
+(defn get-width [] 364)
+(defn get-height [] 364)
+(defn get-bounds [] [0 0 364 364])
+(defn get-pixels [] (.-data (.getImageData @context* 0 0 364 364)))
 
 ;; -------------------------
 ;; Style
@@ -23,8 +23,8 @@
                    :border-radius "3px"
                    :background-color "#000000"
                    :cursor "pointer"
-                   :width "420px"
-                   :height "420px"})
+                   :width "364px"
+                   :height "364px"})
 
 ;; -------------------------
 ;; Update Function
@@ -36,10 +36,10 @@
 (defn- redraw! [canvas context clicks]
   (.clearRect @context* 0 0 (.-width canvas) (.-height canvas))
   (set! (.-shadowBlur context) 60)
-  (set! (.-shadowColor context) "#FFFFFF")
+  (set! (.-shadowColor context) "#DDDDDD")
   (set! (.-strokeStyle context) "#FFFFFF")
   (set! (.-lineJoin context) "round")
-  (set! (.-lineWidth context) 50)
+  (set! (.-lineWidth context) 10)
   (doseq [i (range (count clicks))]
     (.beginPath context)
     (if (get-in clicks [i 2])
@@ -62,8 +62,8 @@
        (fn []
          [:canvas {:id "canvas"
                    :style canvas-style
-                   :width "420"
-                   :height "420"
+                   :width "364"
+                   :height "364"
                    :on-mouse-down (fn [e]
                                     (let [pt [(- (.-pageX e) (.-offsetLeft @canvas*))
                                             (- (.-pageY e) (.-offsetTop @canvas*))]]
