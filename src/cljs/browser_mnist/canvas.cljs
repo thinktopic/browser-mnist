@@ -64,6 +64,24 @@
                    :style canvas-style
                    :width "336"
                    :height "336"
+                   :on-touch-start (fn [e]
+                                     (let [touch (aget (.-touches e) 0)
+                                           event-params (clj->js {:clientX (.-clientX touch)
+                                                                  :clientY (.-clientY touch)})
+                                           event (js/MouseEvent. "mousedown" event-params)]
+                                       (.dispatchEvent @canvas* event))
+                                     (.-preventDefault e))
+                   :on-touch-move (fn [e]
+                                     (let [touch (aget (.-touches e) 0)
+                                           event-params (clj->js {:clientX (.-clientX touch)
+                                                                  :clientY (.-clientY touch)})
+                                           event (js/MouseEvent. "mousemove" event-params)]
+                                       (.dispatchEvent @canvas* event))
+                                     (.-preventDefault e))
+                   :on-touch-end (fn [e]
+                                     (let [event (js/MouseEvent. "mouseup" (clj->js {}))]
+                                       (.dispatchEvent @canvas* event))
+                                     (.-preventDefault e))
                    :on-mouse-down (fn [e]
                                     (let [pt [(- (.-pageX e) (.-offsetLeft @canvas*))
                                             (- (.-pageY e) (.-offsetTop @canvas*))]]
