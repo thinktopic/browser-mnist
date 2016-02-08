@@ -26,7 +26,6 @@
 (def classified* (atom nil))
 (def loading* (atom true))
 (def classifying* (atom false))
-(def using-basic* (atom true))
 
 ;; -------------------------
 ;; Neural Network
@@ -132,43 +131,40 @@
 (defn home-page []
   [:div [:h2 "Welcome to browser-mnist"]
    [:div
-    [:span "Draw a digit in the box below and hit \"Recognize\" to use a trained neural net to determine which digit it is (0-9). You may hit \"Clear\" to clear your current drawing. It is also possible to use a much more advanced (and consequently slower) convolutional neural net by choosing the \"Use Convolutional\" option. "]
+    [:div {:style {:width "350px"}} "Draw a digit [0-9] in the box below and click \"Recognize\" to use a trained neural net to classify it. You may also use a convolutional neural net, however note it is slower to classify."]
     [:br]
-    [:br]
+    (if @loading*
+      [:div "Loading network..."]
+      (if @classifying*
+        [:div "Classifying..."]
+        [:div.actions
+         [:div.network {:style {:margin-top "5px"}}
+          "Network Type: "
+          [:select
+           {:value "basic"
+            :on-change (fn [e]
+                        (canvas/clear!)
+                        (reset! loading* true)
+                        (reset! classified* nil)
+                        (if (= (.. e -target -value) "basic")
+                          (model/get-basic-network load-network)
+                          (model/get-conv-network load-network)))}
+           ^{:key "basic"} [:option {:value "basic"} "basic"]
+           ^{:key "convolutional"} [:option {:value "convolutional"} "convolutional"]]]
+         [:div.actions {:style {:margin-bottom "5px"}}
+          [:span {:style btn-style :on-click #(do (canvas/clear!) (reset! classified* nil))} "Clear"]
+          [:span {:style btn-style :on-click #(do (reset! classifying* true)
+                                                  (get-array))} "Recognize"]]
+         (when @classified*
+           [:span {:style {:margin-left "5px"
+                           :display "inline-block"}} " Result: " @classified*])]))
     [canvas/canvas]
     [:canvas {:id "small-canvas"
               :style {:display "none"
                       :border "1px solid blue"
                       :background-color "black"}
               :width "28"
-              :height "28"}]]
-
-   (if @loading*
-     [:div "Loading network..."]
-     (if @classifying*
-       [:div "Classifying..."]
-       [:div.actions
-        (if (not @using-basic*)
-        [:span {:style btn-style :on-click #(do
-                                              (reset! loading* true)
-                                              (model/get-basic-network load-network)
-                                              (canvas/clear!)
-                                              (reset! classified* nil)
-                                              (reset! using-basic* true)
-                                              )} "Basic"])
-        (if @using-basic*
-        [:span {:style btn-style :on-click #(do
-                                              (reset! loading* true)
-                                              (model/get-conv-network load-network)
-                                              (canvas/clear!)
-                                              (reset! classified* nil)
-                                              (reset! using-basic* false))} "Convolutional"])
-        [:span {:style btn-style :on-click #(do (canvas/clear!) (reset! classified* nil))} "Clear"]
-        [:span {:style btn-style :on-click #(do (reset! classifying* true)
-                                                 (get-array))} "Recognize"]
-        (when @classified*
-          [:span {:style {:margin-left "5px"
-                          :display "inline-block"}} " Result: " @classified*])]))])
+              :height "28"}]]])
 
 ;; -------------------------
 ;; Routing
