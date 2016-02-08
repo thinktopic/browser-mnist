@@ -154,10 +154,10 @@
          [:div.actions {:style {:margin-bottom "5px"}}
           [:span {:style btn-style :on-click #(do (canvas/clear!) (reset! classified* nil))} "Clear"]
           [:span {:style btn-style :on-click #(do (reset! classifying* true)
-                                                  (get-array))} "Recognize"]]
-         (when @classified*
-           [:span {:style {:margin-left "5px"
-                           :display "inline-block"}} " Result: " @classified*])]))
+                                                  (get-array))} "Recognize"]
+          (when @classified*
+            [:span {:style {:margin-left "5px"
+                            :display "inline-block"}} " Result: " @classified*])]]))
     [canvas/canvas]
     [:canvas {:id "small-canvas"
               :style {:display "none"
